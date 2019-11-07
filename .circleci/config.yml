@@ -4,20 +4,6 @@
 #
 version: 2
 jobs:
-  pullcode:
-     docker:
-      # specify the version you desire here
-      - image: circleci/node:7.10
-    working_directory: ~/repo
-
-    steps:
-      - add_ssh_keys:
-          fingersprints:
-            - '43:99:c4:15:d9:e0:51:d2:80:f9:da:4d:9c:00:1e:fc'
-      - run:
-          name: test
-          command: touch quy.txt
-
   build:
     docker:
       # specify the version you desire here
@@ -70,7 +56,29 @@ jobs:
                 "body=[info][title] $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME BUIL FAILED (anger) [/title]Repository name: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME%0AAuthor: $CIRCLE_USERNAME%0ABranch: $CIRCLE_BRANCH%0ACommit/pull request link: https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commit/$CIRCLE_SHA1%0ABuild link: https://circleci.com/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM[/info]" \
                 "https://api.chatwork.com/v2/rooms/$CHATWORK_ROOM/messages"
             fi
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+  deploy:
+    machine:
+      enabled: true
+
+    working_directory: ~/repo
+
+    steps:
+      - add_ssh_keys:
+          fingersprints:
+            - '5d:dc:47:89:77:c4:57:6e:42:32:c5:10:c8:b5:d4:08'
+      - run:
+          name: 'deploy'
+          command: ssh chientm@139.162.40.88 'cd crypto-pet && . deploy.sh'
+
+workflows:
+  version: 2
+
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
