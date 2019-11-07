@@ -68,7 +68,8 @@ jobs:
             - '5d:dc:47:89:77:c4:57:6e:42:32:c5:10:c8:b5:d4:08'
       - run:
           name: 'deploy'
-          command: ssh chientm@139.162.40.88 'cd crypto-pet && . deploy.sh'
+          command: ssh chientm@139.162.40.88 'ls'
+          # command: ssh chientm@139.162.40.88 'cd crypto-pet && . deploy.sh'
 
 workflows:
   version: 2
@@ -81,4 +82,4 @@ workflows:
             - build
           filters:
             branches:
-              only: master
+              only: release
